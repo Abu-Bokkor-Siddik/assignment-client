@@ -29,11 +29,14 @@ async function run() {
 
 // get some data 
 app.get('/my',async(req,res)=>{
-
+  const selectdatas =req.query.selectdata
   let query={}
 
       if(req.query?.email){
         query={email:req.query.email}
+      }
+      if(req.query.selectdata){
+        query ={selectdata:req.query.selectdata}
       }
 
       const cursor =asscollection.find(query)
@@ -43,11 +46,46 @@ app.get('/my',async(req,res)=>{
    
  
 })
+// get view 
+app.get('/my/:id',async(req,res)=>{
+  const id = req.params.id
+const query = {_id: new ObjectId(id)}
+const result = await asscollection.findOne(query)
+res.send(result)
+})
+
+// updata data 
+app.put('/my/:id',async(req,res)=>{
+  const id = req.params.id
+const filter ={ _id :new ObjectId(id)}
+const options ={ upset:true}
+const updateD = req.body 
+const updated ={
+  $set:{
+    titles:updateD.titles,
+    mark:updateD.mark,
+    description:updateD.description,
+    thumbnail:updateD.thumbnail,
+    data1:updateD.data1,
+    email:updateD.email,
+    image:updateD.image,
+    selectdata:updateD.selectdata
+  }
+}
+const result = await asscollection.updateOne(filter,updated,options)
+res.send(result)
+})
 // get all ass 
  app.get('/my',async(req,res)=>{
-  const result = asscollection.find().toArray()
+  console.log(req.query.selectdata)
+  
+  
+
+  const result = await asscollection.find().toArray()
   res.send(result)
  })
+
+ 
 // delete 
 app.delete('/my/:id',async(req,res)=>{
   const id = req.params.id;
