@@ -43,6 +43,11 @@ app.get('/my',async(req,res)=>{
    
  
 })
+// get all ass 
+ app.get('/my',async(req,res)=>{
+  const result = asscollection.find().toArray()
+  res.send(result)
+ })
 // delete 
 app.delete('/my/:id',async(req,res)=>{
   const id = req.params.id;
