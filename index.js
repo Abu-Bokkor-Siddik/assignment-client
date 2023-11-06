@@ -65,6 +65,19 @@ const query = {_id: new ObjectId(id)}
 const result = await asscollection.findOne(query)
 res.send(result)
 })
+// submitedD find by id
+app.get('/submits/:id',async(req,res)=>{
+  try{
+    const id = req.params.id
+    // console.log('my id', typeof(id) )
+  const query = {_id: new ObjectId(id)}
+  const result = await submitedData.findOne(query)
+  res.send(result)
+  }catch(errs){
+    console.log(errs)
+  }
+
+})
 
 // updata data 
 app.put('/my/:id',async(req,res)=>{
