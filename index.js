@@ -49,10 +49,10 @@ app.get('/my',async(req,res)=>{
 })
 // submited data filter data 
 app.get('/submits',async(req,res)=>{
-  const status =req.query?.status;
+  const status =req.query?.stutas;
   let query= {};
-  if(req.query.status){
-    query={ status:req.query.status}
+  if(req.query.stutas){
+    query={ stutas:req.query.stutas}
   }
   const result = await submitedData.find(query).toArray()
   res.send(result)
@@ -98,6 +98,29 @@ const updated ={
   }
 }
 const result = await asscollection.updateOne(filter,updated,options)
+res.send(result)
+})
+
+
+
+// update data form submited data 
+app.put('/submits/:id',async(req,res)=>{
+  const id = req.params.id
+  const filter = {_id :new ObjectId(id)}
+  const options ={ upset:true}
+const updateDs= req.body 
+const updateds ={
+  $set:{
+    
+    mark:updateDs.mark,
+    note:updateDs.note,
+    stutas:updateDs.stutas,
+    textarea:updateDs.textarea 
+   
+  }
+
+}
+const result = await submitedData.updateOne(filter,updateds,options)
 res.send(result)
 })
 // get all ass 
