@@ -26,6 +26,7 @@ async function run() {
     // Connect the client to the server	(optional starting in v4.7)
     await client.connect();
     const asscollection =client.db('assignment').collection('dataAss')
+    const submitedData = client.db('assignment').collection('dataSubmited')
 
 // get some data 
 app.get('/my',async(req,res)=>{
@@ -45,6 +46,17 @@ app.get('/my',async(req,res)=>{
       
    
  
+})
+// submited data filter data 
+app.get('/submits',async(req,res)=>{
+  const status =req.query?.status;
+  let query= {};
+  if(req.query.status){
+    query={ status:req.query.status}
+  }
+  const result = await submitedData.find(query).toArray()
+  res.send(result)
+
 })
 // get view 
 app.get('/my/:id',async(req,res)=>{
@@ -103,6 +115,19 @@ app.delete('/my/:id',async(req,res)=>{
         }catch(err){
             console.log(err)
         }
+    })
+
+    //  submited data here 
+    app.post('/submits',async(req,res)=>{
+      try{
+        const body =req.body 
+        const result =await submitedData.insertOne(body)
+        res.send(result)
+        console.log(body)
+      }catch(err){
+        console.log(err)
+      }
+
     })
     // Send a ping to confirm a successful connection
     await client.db("admin").command({ ping: 1 });
