@@ -33,6 +33,7 @@ app.get('/my',async(req,res)=>{
   const selectdatas =req.query.selectdata
   
   
+  
   let query={}
 
       if(req.query?.email){
@@ -41,8 +42,9 @@ app.get('/my',async(req,res)=>{
       if(req.query.selectdata){
         query ={selectdata:req.query.selectdata}
       }
+    
      
-
+ 
       const cursor =asscollection.find(query)
       const result =await cursor.toArray()
       res.send(result)
@@ -133,15 +135,15 @@ const result = await submitedData.updateOne(filter,updateds,options)
 res.send(result)
 })
 // get all ass 
- app.get('/my',async(req,res)=>{
+//  app.get('/my',async(req,res)=>{
   
   
   
 
-  const result = await asscollection.find()
-  .toArray()
-  res.send(result)
- })
+//   const result = await asscollection.find()
+//   .toArray()
+//   res.send(result)
+//  })
 
  
 // delete 
