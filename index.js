@@ -1,12 +1,33 @@
 const express = require('express')
 const app = express()
 const cors =require('cors')
+const jwt = require('jsonwebtoken');
+const cookiePersar =require('cookie-parser')
+
 const port = 3000
 
 
 
-app.use(cors())
+app.use(cors({
+  origin: ['http://localhost:5173'],
+  credentials: true 
+}));
 app.use(express.json())
+app.use(cookiePersar())
+
+const verifyToken =(req,res,next)=>{
+  const token =req?.cookies?.token 
+  if(!token){
+    return res.status(401).send('unathorized accessgpt')
+  }
+  jwt.verify(token,'sricret',(err,decoded)=>{
+    if(err){
+      return res.status(401).send({message:'unathorize access'})
+    }
+    req.user=decoded
+    next()
+  })
+}
 
 
 const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
@@ -28,10 +49,29 @@ async function run() {
     const asscollection =client.db('assignment').collection('dataAss')
     const submitedData = client.db('assignment').collection('dataSubmited')
 
+
+
+
+
+
+
 // get some data 
 app.get('/my',async(req,res)=>{
   const selectdatas =req.query.selectdata
-  
+  console.log(req.query)
+  const page =parseInt(req.query.page)
+  console.log(page)
+
+ 
+  // console.log('token user ',req.user)
+
+  // verifyToken,
+
+  // if(req.query?.email !== req.user?.email){
+  //   return res.status(403).send({message:"forbidden access"})
+  // }
+  // // cheack cookies 
+  // console.log('tok tok ',req.cookies?.token)
   
   
   let query={}
@@ -42,16 +82,21 @@ app.get('/my',async(req,res)=>{
       if(req.query.selectdata){
         query ={selectdata:req.query.selectdata}
       }
-    
-     
- 
-      const cursor =asscollection.find(query)
+      const cursor =asscollection.find(query).skip(page*4).limit(4)
       const result =await cursor.toArray()
       res.send(result)
       
    
  
 })
+
+
+
+
+
+
+
+
 
 // count 
 app.get('/myc',async(req,res)=>{
@@ -69,6 +114,23 @@ app.get('/submits',async(req,res)=>{
   res.send(result)
 
 })
+// submted data filter by result route
+
+
+app.get('/submits',async(req,res)=>{
+
+  // console.log('tok tokddd ',req.cookies?.token)
+
+  const status =req.query?.stutas;
+  let query= {};
+  if(req.query.stutas){
+    query={ stutas:req.query.stutas}
+  }
+  const result = await submitedData.find(query).toArray()
+  res.send(result)
+
+})
+
 // get view 
 app.get('/my/:id',async(req,res)=>{
   const id = req.params.id
@@ -135,15 +197,12 @@ const result = await submitedData.updateOne(filter,updateds,options)
 res.send(result)
 })
 // get all ass 
-//  app.get('/my',async(req,res)=>{
+ app.get('/my',async(req,res)=>{
   
-  
-  
-
-//   const result = await asscollection.find()
-//   .toArray()
-//   res.send(result)
-//  })
+  const result = await asscollection.find()
+  .toArray()
+  res.send(result)
+ })
 
  
 // delete 
@@ -176,6 +235,29 @@ app.delete('/my/:id',async(req,res)=>{
         console.log(err)
       }
 
+    })
+
+    // jwt 
+    app.post('/jwt1',async(req,res)=>{
+
+      const users = req.body
+      const token =jwt.sign(users,'sricret',{expiresIn:'1h'})
+      res.cookie('token',token,{
+        httpOnly:true,
+        secure:true,
+        sameSite:'none'
+       
+
+      })
+      
+      .send({success:true})
+
+    })
+    // clear cookies 
+    app.post('/logout',async(req,res)=>{
+      const user = req.body 
+    res.clearCookie('token',{maxAge:0}).send({message:'successfully clear'})
+      console.log(user)
     })
     // Send a ping to confirm a successful connection
     await client.db("admin").command({ ping: 1 });
