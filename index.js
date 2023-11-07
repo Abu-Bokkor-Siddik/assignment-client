@@ -31,6 +31,8 @@ async function run() {
 // get some data 
 app.get('/my',async(req,res)=>{
   const selectdatas =req.query.selectdata
+  
+  
   let query={}
 
       if(req.query?.email){
@@ -39,6 +41,7 @@ app.get('/my',async(req,res)=>{
       if(req.query.selectdata){
         query ={selectdata:req.query.selectdata}
       }
+     
 
       const cursor =asscollection.find(query)
       const result =await cursor.toArray()
@@ -46,6 +49,12 @@ app.get('/my',async(req,res)=>{
       
    
  
+})
+
+// count 
+app.get('/myc',async(req,res)=>{
+  const count = await asscollection.estimatedDocumentCount()
+  res.send({count})
 })
 // submited data filter data 
 app.get('/submits',async(req,res)=>{
@@ -125,11 +134,12 @@ res.send(result)
 })
 // get all ass 
  app.get('/my',async(req,res)=>{
-  console.log(req.query.selectdata)
+  
   
   
 
-  const result = await asscollection.find().toArray()
+  const result = await asscollection.find()
+  .toArray()
   res.send(result)
  })
 
